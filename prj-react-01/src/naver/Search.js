@@ -24,7 +24,7 @@ function Search(){
 
   const devSearchList = serachDevelopers.map(
     (serachDev, index)=>
-    <tr><td>{serachDevelopers.length-index}</td><td>{serachDev.dev_no}</td><td>{serachDev.dev_name}</td><td>{serachDev.addr}</td><td>{serachDev.phone}</td></tr>
+    <tr bgColor={index%2==0?"white":"lightgray"}><td>{serachDevelopers.length-index}</td><td>{serachDev.dev_no}</td><td>{serachDev.dev_name}</td><td>{serachDev.addr}</td><td>{serachDev.phone}</td></tr>
   )
 
   const searchKeyword = (e) =>{

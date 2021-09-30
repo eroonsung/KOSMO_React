@@ -24,9 +24,11 @@ function SearchDouble(){
   const [serachDevelopers, setSearchDevelopers] = useState(developers);
   const [orAndVal, setOrAndVal] = useState('or');
 
+
   const devSearchList = serachDevelopers.map(
-    (serachDev,index) =>
-    <tr><td>{serachDevelopers.length-index}</td><td>{serachDev.dev_no}</td><td>{serachDev.dev_name}</td><td>{serachDev.addr}</td><td>{serachDev.phone}</td></tr>
+    (serachDev,index) => (
+    <tr bgColor={index%2==0?"white":"lightgray"}><td>{serachDevelopers.length-index}</td><td>{serachDev.dev_no}</td><td>{serachDev.dev_name}</td><td>{serachDev.addr}</td><td>{serachDev.phone}</td></tr>
+    )
   )
 
   const searchKeyword = (e) =>{
@@ -134,7 +136,7 @@ function SearchDouble(){
       <div style={{height:'10px'}}/>
       
       <table width="500" cellPadding="5" border="1" style={{borderCollapse:"collapse"}}>
-        <tr  bgColor="gray"><th>번호</th><th>직원번호</th><th>직원명</th><th>거주지</th><th>전화번호</th></tr>
+        <tr bgColor="gray"><th>번호</th><th>직원번호</th><th>직원명</th><th>거주지</th><th>전화번호</th></tr>
         {devSearchList}
       </table>
       
