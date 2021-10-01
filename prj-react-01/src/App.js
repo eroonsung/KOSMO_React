@@ -21,6 +21,8 @@ import RegData from './naver/RegData';
 import RegData2 from './naver/RegData2';
 import Search from './naver/Search';
 import SearchDouble from './naver/SearchDouble';
+import SearchDouble2 from './naver/SearchDouble2';
+import Search2 from './naver/Search2';
 
 function App() {
   return (
@@ -50,8 +52,11 @@ function App() {
 
       <Route path ="/naver/regData" component={RegData}/>
       <Route path ="/naver/regData2" component={RegData2}/>
+      
       <Route path ="/naver/search" component={Search}/>
+      <Route path ="/naver/search2" component={Search2}/>
       <Route path ="/naver/searchDouble" component={SearchDouble}/>
+      <Route path ="/naver/searchDouble2" component={SearchDouble2}/>
     </div>
   );
 }

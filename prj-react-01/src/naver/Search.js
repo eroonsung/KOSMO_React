@@ -20,16 +20,13 @@ function Search(){
     ]
   
   const [keyword, setKeyword] = useState('');
-  const [serachDevelopers, setSearchDevelopers] = useState(developers);
+  const [searchDevelopers, setSearchDevelopers] = useState(developers);
 
-  const devSearchList = serachDevelopers.map(
-    (serachDev, index)=>
-    <tr bgColor={index%2==0?"white":"lightgray"}><td>{serachDevelopers.length-index}</td><td>{serachDev.dev_no}</td><td>{serachDev.dev_name}</td><td>{serachDev.addr}</td><td>{serachDev.phone}</td></tr>
-  )
+
 
   const searchKeyword = (e) =>{
     let val = e.target.value;
-    val = val.trim();
+   // val = val.trim();
     setKeyword(val);
   }
 
@@ -42,12 +39,25 @@ function Search(){
       return;
     }
 
-    let keyW= keyword.trim().toLowerCase(); 
-    const searchDevelopers = developers.filter(
-      dev => dev.dev_name.indexOf(keyW) !== -1||dev.addr.indexOf(keyW) !== -1||dev.phone.indexOf(keyW) !== -1
+    let keyW= keyword.trim().toLowerCase();
+    setKeyword(keyword.trim()); 
+    //----------------------------------------------------------------------------
+    //지역변수 searchDevelopers를 선언하고 
+    //Array 객체의 filter 메소드를 호출하여
+    //developers에 저장된 사용정 객체를 1개씩 복사해서 꺼내서
+    //화살표 함수를 호출하면서 매개변수로 전달시킨다.
+    //화살표 함수의 리턴값이 true이면 매개변수로 들어온 사용정 객체를 누적시킨다.
+    //즉 입력한 키워드가 부분적으로 들어있는 사용정 객체만 누적시킨다.
+    //즉 new_developerList 안에는 키워드가 들어있는 사용정 객체만 모여있는 Array 객체가 저장되어 있다.
+    //----------------------------------------------------------------------------
+    const new_searchDevelopers = developers.filter(
+      //(매개변수명)=>{return true 또는 false를 리턴하는 연산식;}
+      dev => dev.dev_name.toLowerCase().indexOf(keyW) !== -1||dev.addr.toLowerCase().indexOf(keyW) !== -1||dev.phone.indexOf(keyW) !== -1
     )
-    setSearchDevelopers(searchDevelopers);
-  
+    //new_searchDevelopers안에 Array객체를 searchDevelopers 지역변수 안에 넣기 
+    setSearchDevelopers(new_searchDevelopers);
+
+
   }
   
   const searchAll = () => {
@@ -58,11 +68,33 @@ function Search(){
     if(e.key=='Enter') {search()}
   }
 
+  //******************************************************************************
+  //지역변수 devSearchList선언
+  // searchDevelopers안에 저장된 사용정 객체들 안의 데이터를 html태그 형태로 누적
+  //******************************************************************************
+  
+  const devSearchList = searchDevelopers.map(
+    (serachDev, index)=>
+    <tr bgColor={index%2==0?"white":"lightgray"}><td>{searchDevelopers.length-index}</td><td>{serachDev.dev_no}</td><td>{serachDev.dev_name}</td><td>{serachDev.addr}</td><td>{serachDev.phone}</td></tr>
+  )
+  
+ /*
+  let devSearchList="";
+  if(searchDevelopers.length==0){
+    devSearchList = "검색 결과가 없습니다."
+  }else{
+    devSearchList = searchDevelopers.map(
+      (serachDev, index)=>
+      <tr bgColor={index%2==0?"white":"lightgray"}><td>{searchDevelopers.length-index}</td><td>{serachDev.dev_no}</td><td>{serachDev.dev_name}</td><td>{serachDev.addr}</td><td>{serachDev.phone}</td></tr>
+    )
+  }
+*/
   return(
     <>
     <center>
+    함수 컴포넌트<br/>
     <div style={{height:'10px'}}/>
-    <input 
+    [키워드] : <input 
         type="text" 
         value={keyword}
         onChange={searchKeyword}
@@ -78,7 +110,7 @@ function Search(){
         <tr bgColor="gray"><th>번호</th><th>직원번호</th><th>직원명</th><th>거주지</th><th>전화번호</th></tr>
         {devSearchList}
       </table>
-      
+      {searchDevelopers.length==0?'검색결과가 없습니다.':null}
     </center>
     </>
   )
