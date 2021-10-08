@@ -30,6 +30,7 @@ import Search2 from './naver/Search2';
 import Search5 from './naver/Search5';
 import CheckLogin from './naver/CheckLogin';
 import CheckLogin2 from './naver/CheckLogin2';
+import Avg from './naver/Avg';
 
 function App() {
   return (
@@ -68,6 +69,8 @@ function App() {
 
       <Route path ="/naver/checkLogin" component={CheckLogin}/>
       <Route path ="/naver/checkLogin2" component={CheckLogin2}/>
+
+      <Route path ="/naver/avg" component={Avg}/>
     </div>
   );
 }
