@@ -106,7 +106,7 @@ function Search(){
       >모두검색</button>
       <div style={{height:'10px'}}/>
       
-      <table width="500" cellPadding="5" border="1" style={{borderCollapse:"collapse"}}>
+      <table width="500" cellPadding="5" border="1" className="tbcss0">
         <tr bgColor="gray"><th>번호</th><th>직원번호</th><th>직원명</th><th>거주지</th><th>전화번호</th></tr>
         {devSearchList}
       </table>

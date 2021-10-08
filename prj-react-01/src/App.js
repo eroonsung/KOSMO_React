@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router-dom';
 
+//CSS파일 수입하기
+import './naver/common.css'; 
+
+
 import CheckChick from './naver/CheckChick';
 import CheckChick3 from './naver/CheckChick3';
 import CheckChick2 from './naver/CheckChick2';
@@ -23,6 +27,9 @@ import Search from './naver/Search';
 import SearchDouble from './naver/SearchDouble';
 import SearchDouble2 from './naver/SearchDouble2';
 import Search2 from './naver/Search2';
+import Search5 from './naver/Search5';
+import CheckLogin from './naver/CheckLogin';
+import CheckLogin2 from './naver/CheckLogin2';
 
 function App() {
   return (
@@ -57,6 +64,10 @@ function App() {
       <Route path ="/naver/search2" component={Search2}/>
       <Route path ="/naver/searchDouble" component={SearchDouble}/>
       <Route path ="/naver/searchDouble2" component={SearchDouble2}/>
+      <Route path ="/naver/search5" component={Search5}/>
+
+      <Route path ="/naver/checkLogin" component={CheckLogin}/>
+      <Route path ="/naver/checkLogin2" component={CheckLogin2}/>
     </div>
   );
 }
