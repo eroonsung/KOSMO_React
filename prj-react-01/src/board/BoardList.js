@@ -80,12 +80,12 @@ function BoardList(props){
  }
 
  const change= (e)=>{
-  setSearchCdt( { ...setSearchResult, [e.target.name]:e.target.value } );
+  setSearchCdt( { ...setSearchCdt, [e.target.name]:e.target.value } );
 }
-const changePage= (e)=>{
-  setSearchCdt( { ...setSearchResult, selectPageNo:e.target.value} );
-    
+const keyPress = e=>{
+  if(e.key=='Enter') {search()}
 }
+
  //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
  //지역변수 search 선언하고 화살표 함수 저장하기
  //검색 버튼을 눌렀을 때 실행할 코딩 설정하기
@@ -131,23 +131,23 @@ const changePage= (e)=>{
  //모두 검색 버튼을 눌렀을 때 실행할 코딩 설정하기
 //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
  const searchAll = ()=>{
+  //let tmp = xxx;
   setSearchCdt( {...searchCdt, keyword1:''} );
-  
-  axios.post(
-    "http://localhost:8081/naver/boardList.do"
-    , searchCdt
-   ).then(
-      responseJson =>{
-        setSearchResult( {...setSearchResult,...responseJson.data} );
-      }
-   ).catch(
-     function (error) {
-       alert(error.message);
-     }
-   )
-
-   setXxx(Math.random());
+  //setXxx(++tmp);
+  setXxx( Math.random() );
  }
+
+ const searchWithPageNo = (clickedselectPageNo)=>{
+   setSearchCdt({...searchCdt, selectPageNo:clickedselectPageNo});
+   setXxx( Math.random() );
+ }
+
+
+ const goBoardContent = (b_no)=>{
+  alert(b_no);
+  return;
+ }
+
  //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
  //지역변수 pagingNoTag 선언하고 화살표 함수 저장하기
  //페이징 번호가 HTML 태그와 어울려 저장된다.
@@ -164,10 +164,16 @@ const changePage= (e)=>{
 
    if(searchResult.selectPageNo>1){
      pagingNoTag.push(
-       <td><span style={{cursor:'pointer'}}>[처음]</span></td>
+       // onClick='search_with_changePageNo(1);'
+       <td><span style={{cursor:'pointer'}} onClick={()=>{
+        searchWithPageNo(1);
+      }}>[처음]</span></td>
      )    
      pagingNoTag.push(
-      <td><span style={{cursor:'pointer'}}>[이전]</span></td>
+       //onClick='search_with_changePageNo(${pagingNos.selectPageNo}-1);
+      <td><span style={{cursor:'pointer'}} onClick={()=>{
+        searchWithPageNo(searchCdt.selectPageNo-1);
+      }}>[이전]</span></td>
     )
    }else{
     pagingNoTag.push(
@@ -184,17 +190,26 @@ const changePage= (e)=>{
         )
       }else{
         pagingNoTag.push(
-          <td><span style={{cursor:'pointer'}} onClick={changePage}>[{i}]</span></td>
+          //onClick='search_with_changePageNo(${no});
+          <td><span style={{cursor:'pointer'}} onClick={()=>{
+            searchWithPageNo(i);
+          }}>[{i}]</span></td>
         )
       }
 
    }
    if(searchResult.selectPageNo<searchResult.last_pageNo){
     pagingNoTag.push(
-      <td><span style={{cursor:'pointer'}}>[다음]</span></td>
+      //onClick='search_with_changePageNo(${pagingNos.selectPageNo}+1);'
+      <td><span style={{cursor:'pointer'}} onClick={()=>{
+        searchWithPageNo(searchCdt.selectPageNo+1);
+      }}>[다음]</span></td>
     )
     pagingNoTag.push(
-     <td><span style={{cursor:'pointer'}}>[마지막]</span></td>
+      //onClick='search_with_changePageNo(${pagingNos.last_pageNo});
+     <td><span style={{cursor:'pointer'}} onClick={()=>{
+      searchWithPageNo(searchResult.last_pageNo);
+    }}>[마지막]</span></td>
    )
   }else{
    pagingNoTag.push(
@@ -211,7 +226,7 @@ const changePage= (e)=>{
     <>
     <center>
     함수 컴포넌트 BoardList<br/><br/>
-    [키워드] : <input type="text" name="keyword1" onChange={change} value={searchCdt.keyword1}/>
+    [키워드] : <input type="text" name="keyword1" onChange={change} value={searchCdt.keyword1} onKeyPress={keyPress} />
     <br/><br/>
     <button onClick={search}>검색</button>{'  '}
     <button onClick={searchAll}>모두검색</button>{'  '}
@@ -230,7 +245,9 @@ const changePage= (e)=>{
         searchResult.boardList==null?null:
         searchResult.boardList.map(
           (board,index) => (
-            <tr bgColor={index%2==0?"white":"lightgray"}>
+            <tr bgColor={index%2==0?"white":"lightgray"} style={{cursor:'pointer'}} onClick={()=>{
+              goBoardContent(board.b_no);
+            }}>
               <td>{searchResult.boardListAllCnt-(searchResult.selectPageNo*20-20+1)+1-index}</td>
               <td>{board.subject}</td>
               <td>{board.writer}</td>

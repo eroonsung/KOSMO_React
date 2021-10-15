@@ -33,6 +33,7 @@ import CheckLogin2 from './naver/CheckLogin2';
 import Avg from './naver/Avg';
 import LoginForm from './board/LoginForm';
 import BoardList from './board/BoardList';
+import BoardContentForm from './board/BoardContentForm';
 
 function App() {
   return (
@@ -76,6 +77,7 @@ function App() {
 
       <Route path ="/board/loginForm" component={LoginForm}/>
       <Route path ="/board/boardList" component={BoardList}/>
+      <Route path ="/board/boardContentForm" component={BoardContentForm}/>
     </div>
   );
 }
