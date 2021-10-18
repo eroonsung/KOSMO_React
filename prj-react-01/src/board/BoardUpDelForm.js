@@ -1,18 +1,18 @@
 import React, {useState,useRef, useEffect} from 'react';
 import axios from "axios";
 
-function BoardContentForm(props){
-  //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
-  //게시판 검색화면에서 행 클릭시 들고온 게시판 고유번호를 꺼내기
-  //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+function BoardUpDelForm(props){
   const b_no = props.location.state.b_no;
-  //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
-  //DB에서 가져온 1개의 게시판 데이터를 저장할 지역변수 board 선언하기
-  //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+
+  
+  const goBoardList = ()=>{
+    props.history.push('/board/boardList');
+  }
   const [board, setBoard] = useState( {} );
-  //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
-  //DB에서 1개의 게시판 데이터를 가져올 코딩이 내포된 화살표 함수를 저장할 변수 선언하기
-  //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+  const change= (e)=>{
+    
+    setBoard( { ...board, [e.target.name]:e.target.value } );
+  }
   const getBoard = ()=>{
     //alert(b_no); return;
     axios.post(
@@ -37,57 +37,29 @@ function BoardContentForm(props){
       }
     );
   }
-
-  const goBoardList = ()=>{
-    props.history.push('/board/boardList');
-  }
-
   useEffect(
     ()=>{
       getBoard();
     },[]
   )
-  const goBoardRegForm = ()=>{
-    props.history.push(
-      {
-        pathname: "/board/boardRegForm"
-        , state:{ b_no:board.b_no }
-      }
-    )
-  }
-
-  const goBoardUpDelForm = (b_no)=>{
-    props.history.push({
-      //url 주소 설정
-      pathname:"/board/boardUpDelForm"
-      //이동시 가져갈 데이터 설정
-      , state:{b_no:board.b_no}
-    })
-  }
   return(
     <>
     <center>
-    함수 컴포넌트 BoardContent<br/><br/>
-    {b_no}
+    함수 컴포넌트 BoardUpDelForm<br/><br/>
+
     <table  border="1" cellPadding="5" cellSpacing="0" width="500" bordercolor="lightgray" style={{borderCollapse:'collapse'}}>
-    <caption>상세보기</caption>
+    <caption>수정/삭제</caption>
       <tr>
         <th bgcolor="#efefef">제목</th>
-        <td colSpan="3">{board.subject}</td>
+        <td colSpan="3"><input type="text" name="subject" value={board.subject} onChange={change}/></td>
       </tr>
       <tr>
         <th bgcolor="#efefef">작성자</th>
-        <td colSpan="3">{board.writer}</td>
+        <td colSpan="3"><input type="text" name="writer"  value={board.writer} onChange={change}/></td>
       </tr>
       <tr>
         <th bgcolor="#efefef">이메일</th>
-        <td colSpan="3">{board.email}</td>
-      </tr>
-      <tr>
-        <th bgcolor="#efefef">등록일</th>
-        <td>{board.reg_date}</td>
-        <th bgcolor="#efefef">조회수</th>
-        <td>{board.readcount}</td>
+        <td colSpan="3"><input type="text" name="email" value={board.email} onChange={change}/></td>
       </tr>
       <tr>
         <th bgcolor="#efefef">내용</th>
@@ -95,20 +67,21 @@ function BoardContentForm(props){
           <textarea
             name="content"
             rows="20" cols="50"
-            value={board.content}
-            readOnly
+            value={board.content} onChange={change}
           >
           </textarea>
         </td>
       </tr>
+      <tr>
+        <th bgcolor="#efefef">비밀번호</th>
+        <td><input type="password" name="pwd" value={board.pwd} onChange={change}/></td>
+      </tr>
     </table>
     <br/>
-    <button onClick={goBoardRegForm}>댓글쓰기</button> &nbsp;&nbsp;
-    <button onClick={goBoardUpDelForm}>수정/삭제</button> &nbsp;&nbsp;
     <button onClick={goBoardList}>목록화면으로</button>
     </center>
     </>
   )
 }
 
-export default BoardContentForm;
+export default BoardUpDelForm;

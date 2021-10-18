@@ -143,11 +143,41 @@ const keyPress = e=>{
  }
 
 
- const goBoardContent = (b_no)=>{
-  alert(b_no);
-  return;
+ const goContentForm = (b_no)=>{
+   //"/board/boardContentForm"라는 URL 주소로 이동하기
+   //이동시 가져갈 데이터는 매개변수로 들어온 클릭한 행의 게시판 고유번호이다.
+  //alert(b_no);
+  //상세보기 화면으로 이동하기
+  props.history.push({
+    //url 주소 설정
+    pathname:"/board/boardContentForm"
+    //이동시 가져갈 데이터 설정
+    , state:{b_no:b_no}
+  })
+  /*
+  -----------------------------------------------
+  URL 주소로 이동하면서 데이터 가져가는 코딩 형식
+  -----------------------------------------------
+    props.history.push({
+    pathname:"URL 주소 설정"
+    , state:이동시 가져갈 사용정 객체
+  })
+  -----------------------------------------------
+  URL 주소로 이동한 후 데이터를 꺼낼 때 형식
+  -----------------------------------------------
+  {props.location.state.사용정객체의속성변수명}  
+  */
+
  }
 
+ const goBoardRegForm = ()=>{
+  props.history.push(
+    {
+      pathname: "/board/boardRegForm"
+      , state:{ b_no:0 }
+    }
+  )
+}
  //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
  //지역변수 pagingNoTag 선언하고 화살표 함수 저장하기
  //페이징 번호가 HTML 태그와 어울려 저장된다.
@@ -231,7 +261,7 @@ const keyPress = e=>{
     <button onClick={search}>검색</button>{'  '}
     <button onClick={searchAll}>모두검색</button>{'  '}
     <button onClick={logout}>로그아웃</button><br/><br/>
-
+    <button onClick={goBoardRegForm}>새글쓰기</button> &nbsp;&nbsp;
     {searchResult.boardListAllCnt} 개
     <table border="0" cellPadding="5" cellSpacing="0">
       <tr bgColor="gray">
@@ -246,7 +276,7 @@ const keyPress = e=>{
         searchResult.boardList.map(
           (board,index) => (
             <tr bgColor={index%2==0?"white":"lightgray"} style={{cursor:'pointer'}} onClick={()=>{
-              goBoardContent(board.b_no);
+              goContentForm(board.b_no);
             }}>
               <td>{searchResult.boardListAllCnt-(searchResult.selectPageNo*20-20+1)+1-index}</td>
               <td>{board.subject}</td>

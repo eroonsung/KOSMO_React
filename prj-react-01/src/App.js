@@ -34,6 +34,8 @@ import Avg from './naver/Avg';
 import LoginForm from './board/LoginForm';
 import BoardList from './board/BoardList';
 import BoardContentForm from './board/BoardContentForm';
+import BoardRegForm from './board/BoardRegForm';
+import BoardUpDelForm from './board/BoardUpDelForm';
 
 function App() {
   return (
@@ -78,6 +80,8 @@ function App() {
       <Route path ="/board/loginForm" component={LoginForm}/>
       <Route path ="/board/boardList" component={BoardList}/>
       <Route path ="/board/boardContentForm" component={BoardContentForm}/>
+      <Route path ="/board/boardRegForm" component={BoardRegForm}/>
+      <Route path ="/board/boardUpDelForm" component={BoardUpDelForm}/>
     </div>
   );
 }
