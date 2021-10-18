@@ -7,6 +7,7 @@ public interface BoardService {
 	// [게시판 글 입력 후 입력 적용 행의 개수] 리턴하는 메소드 선언
 	//****************************************************
 	int insertBoard(BoardDTO boardDTO, MultipartFile multi)  throws Exception;
+	int insertBoard(BoardDTO boardDTO)  throws Exception;
 	//****************************************************
 	// [1개 게시판 글] 리턴하는 메소드 선언
 	//****************************************************

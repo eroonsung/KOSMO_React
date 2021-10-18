@@ -225,52 +225,6 @@ public class BoardController {
 	}
 	
 
-	//mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
-	// 위 getBoardList 메소드 안의 내용을 심플하게 줄인 메소드
-	//mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
-	public ModelAndView getBoardList2( 
-			//--------------------------------------
-			// 파라미터값을 저장하고 있는 BoardSearchDTO 객체를 받아오는 매개변수 선언
-			//--------------------------------------
-			BoardSearchDTO  boardSearchDTO
-	){	
-		//*******************************************
-		// 검색 조건에 맞는 [게시판 목록의 총개수] 얻기 
-		//*******************************************
-		int boardListAllCnt = this.boardDAO.getBoardListAllCnt( boardSearchDTO );
-		//*******************************************
-		// 페이징 처리 관련 번호가 저장된 HashMap<String,Integer> 객체 구하기
-		//*******************************************
-		Map<String,Integer> map = Util.getPagingNos( 
-				boardListAllCnt                        // 검색 결과물의 총개수
-				, boardSearchDTO.getSelectPageNo()     // 유저가 선택한 페이지 번호
-				, boardSearchDTO.getRowCntPerPage()    // 한 화면에 보여줄 [행]의 개수
-				, 10                                   // 한 화면에 보여줄 [페이지 번호]의 개수
-		);
-		// HashMap<String,Integer> 객체에 저장된 보정된 선택 페이지 번호를 
-		// BoardSearchDTO 객체에 setSelectPageNo 메소드 호출로 덮어씌우기
-		boardSearchDTO.setSelectPageNo( map.get("selectPageNo") );
-		//*******************************************
-		// 검색 결과물 얻기 
-		//*******************************************
-		List<Map<String,String>> boardList =  this.boardDAO.getBoardList( boardSearchDTO );
-		//*******************************************
-		// ModelAndView 객체 생성하기
-		// ModelAndView 객체에 검색 결과물 저장하기
-		// ModelAndView 객체에 검색 결과물 총개수 저장하기
-		// ModelAndView 객체에 페이징 처리 관련 번호가 저장된 HashMap<String,Integer> 객체 저장하기
-		// [ModelAndView 객체] 리턴하기
-		//*******************************************
-		ModelAndView mav = new ModelAndView( );
-		mav.setViewName( path + "boardList.jsp");
-		mav.addObject("boardList"       ,boardList);
-		mav.addObject("boardListAllCnt" ,boardListAllCnt);
-		mav.addObject("pagingNos"       ,map);    
-		//*******************************************
-		return mav;
-	}
-
-
 
 
 	//mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
@@ -307,6 +261,7 @@ public class BoardController {
 
 
 
+	/*
 	//mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
 	// /boardRegProc.do 로 접근하면 호출되는 메소드 선언하기
 	// 메소드 앞에 
@@ -340,13 +295,14 @@ public class BoardController {
 			// <input type=file name=img> 입력양식의 파일이 저장된 MultipartFile 객체 저장 매개변수 선언.
 			// <주의> 업로드된 파일이 없어도 MultipartFile 객체는 생성되어 들어온다.
 			//*******************************************
-			,@RequestParam("img")  MultipartFile multi
+			//,@RequestParam("img")  MultipartFile multi
 			//*******************************************
 			// Error 객체를 관리하는 BindingResult 객체가 저장되어 들어오는 매개변수 bindingResult 선언
 			// 매개변수에 BindingResult 객체가 있으면 내부에서 유효성 체크 코드가 나온다.
 			//*******************************************
 			, BindingResult bindingResult
 	){
+		
 		//*******************************************
 		// 업로드 파일의 크기와 확장자 체크하기
 		//*******************************************
@@ -368,6 +324,7 @@ public class BoardController {
 					return map;
 				}
 		}
+		
 		//*******************************************
 		// 게시판 등록 성공여부가 저장된 변수 선언. 1이 저장되면 성공했다는 의미
 		// 유효성 체크 에러 메시지 저장할 변수 msg 선언.
@@ -388,7 +345,7 @@ public class BoardController {
 				// [BoardServiceImpl 객체]의 insertBoard 메소드 호출로 
 				// 게시판 글 입력하고 [게시판 입력 적용행의 개수] 얻기
 				//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-				boardRegCnt = this.boardService.insertBoard(boardDTO, multi);
+				boardRegCnt = this.boardService.insertBoard(boardDTO, null);
 			}
 			
 			System.out.println( "BoardController.insertBoard 메소드 호출 성공 " );
@@ -405,6 +362,40 @@ public class BoardController {
 		Map<String,String> map = new HashMap<String,String>();
 		map.put( "boardRegCnt", boardRegCnt+"" );
 		map.put( "msg",msg );
+		return map;
+	}
+*/
+	@RequestMapping( 
+			value="/boardRegProc.do"
+			,method=RequestMethod.POST
+			,produces="application/json;charset=UTF-8"
+	)
+	@ResponseBody
+	public  Map insertBoard( 
+			BoardDTO boardDTO
+	){
+		System.out.println(boardDTO.getB_no());
+		System.out.println(boardDTO.getSubject());
+		//*******************************************
+		// 게시판 등록 성공여부가 저장된 변수 선언. 1이 저장되면 성공했다는 의미
+		// 유효성 체크 에러 메시지 저장할 변수 msg 선언.
+		//*******************************************
+		int boardRegCnt = 0;
+		try {
+				boardRegCnt = this.boardService.insertBoard(boardDTO);
+			
+		}catch(Exception ex) {
+			boardRegCnt  = -1;
+		}
+		//*******************************************
+		// HashMap<String,String> 객체 생성하기
+		// HashMap<String,String> 객체에 게시판 입력 성공행의 개수 저장하기
+		// HashMap<String,String> 객체에 유효성 체크 시 메시지 저장하기
+		// HashMap<String,String> 객체 리턴하기
+		//*******************************************
+		Map map = new HashMap();
+		System.out.println(boardRegCnt);
+		map.put( "boardRegCnt", boardRegCnt );
 		return map;
 	}
 
@@ -442,56 +433,59 @@ public class BoardController {
 	//mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
 	// /boardContentForm.do 접속 시 호출되는 메소드 선언
 	//mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
-	@RequestMapping( value="/boardContentForm.do" )
-	public ModelAndView goBoardContentForm( 
-			@RequestParam(value="b_no") int b_no	
+	
+	@RequestMapping(
+			value="/boardContentForm.do"
+			, method=RequestMethod.POST
+			, produces ="application/json;charset=UTF-8"
+			)
+	@ResponseBody
+	public Map goBoardContentForm( 
+			//@RequestParam(value="b_no") int b_no	
+			@RequestBody BoardDTO boardDTO
 	){
 		//*******************************************
 		// [BoardServiceImpl 객체]의 getBoard 메소드 호출로 [1개의 게시판 글]을 BoardDTO 객체에 담아오기
 		//*******************************************
-		BoardDTO boardDTO = this.boardService.getBoard(b_no);
+		BoardDTO boardDTO2 = this.boardService.getBoard(boardDTO.getB_no());
 
-		//*******************************************
-		// [ModelAndView 객체] 생성하기
-		// [ModelAndView 객체]에 [호출 JSP 페이지명]을 저장하기
-		//*******************************************
-		ModelAndView mav = new ModelAndView( );
-		mav.setViewName( path + "boardContentForm.jsp");
-		mav.addObject("boardDTO", boardDTO);
-
-		//*******************************************
-		// [ModelAndView 객체] 리턴하기
-		//*******************************************
-		return mav;
+		Map map = new HashMap( );
+		map.put("boardDTO",boardDTO2);
+		return map;
 	}
 
 
 	//mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
 	// /boardUpDelForm.do 접속 시 호출되는 메소드 선언
 	//mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
-	@RequestMapping(value="boardUpDelForm.do" )
-	public ModelAndView goBoardUpDelForm( 
+	@RequestMapping(
+			value="/boardUpDelForm.do"
+			, method=RequestMethod.POST
+			, produces ="application/json;charset=UTF-8"
+			)
+	@ResponseBody
+	public Map goBoardUpDelForm( 
 			//---------------------------------------
 			// "b_no" 라는 파라미터명의 파라미터값이 저장되는 매개변수 b_no 선언
 			// 수정 또는 삭제할 게시판 고유 번호가 들어오는 매개변수선언
 			//---------------------------------------
-			@RequestParam(value="b_no") int b_no
+			//@RequestParam(value="b_no") int b_no
+			@RequestBody BoardDTO boardDTO
 	){
 		//*******************************************
 		// boardDAOImpl 객체의 getBoard 메소드 호출로 
 		// 1개의 게시판글을 BoardDTO 객체에 담아서 가져오기
 		//*******************************************
-		BoardDTO boardDTO = this.boardDAO.getBoard(b_no);
+		BoardDTO boardDTO2 = this.boardDAO.getBoard(boardDTO.getB_no());
 		//*******************************************
 		// [ModelAndView 객체] 생성하기
 		// [ModelAndView 객체]에 [호출 JSP 페이지명]을 저장하기
 		// [ModelAndView 객체]에 [수정/삭제할 1개의 게시판 글 정보] 저장하기
 		// [ModelAndView 객체] 리턴하기
 		//*******************************************
-		ModelAndView mav = new ModelAndView( );
-		mav.setViewName( path + "boardUpDelForm.jsp");
-		mav.addObject("boardDTO",boardDTO);
-		return mav;
+		Map map = new HashMap( );
+		map.put("boardDTO",boardDTO2);
+		return map;
 	}
 
 	
