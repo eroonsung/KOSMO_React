@@ -110,9 +110,6 @@ public class BoardServiceImpl implements BoardService{
 			int boardRegCnt = this.boardDAO.insertBoard(boardDTO);
 			//MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
 			
-			
-			
-			
 			//------------------------------------------
 			// 1개 게시판 글 입력 적용 행의 개수 리턴하기
 			//------------------------------------------
@@ -271,7 +268,15 @@ public class BoardServiceImpl implements BoardService{
 	}
 
 
-
+	@Override
+	public int updateBoard(BoardDTO boardDTO) throws Exception {
+		int boardCnt = this.boardDAO.getBoardCnt(boardDTO);
+		if(boardCnt==0) {return -1;}
+		int pwdCnt = this.boardDAO.getPwdCnt(boardDTO);
+		if(pwdCnt==0) {return -2;}
+		int updateCnt = this.boardDAO.updateBoard(boardDTO);
+		return updateCnt;
+	}
 
 
 
@@ -431,5 +436,6 @@ public class BoardServiceImpl implements BoardService{
 		return deleteCnt;
 		
 	}
+
 
 }

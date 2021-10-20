@@ -16,7 +16,7 @@ public interface BoardService {
 	// [1개 게시판] 수정 실행하고 수정 적용행의 개수를 리턴하는 메소드 선언
 	//****************************************************
 	int updateBoard(BoardDTO boardDTO, MultipartFile multi)  throws Exception;
-
+	int updateBoard(BoardDTO boardDTO)  throws Exception;
 	//****************************************************
 	// [1개 게시판] 삭제 후 삭제 적용행의 개수를 리턴하는 메소드 선언
 	//****************************************************

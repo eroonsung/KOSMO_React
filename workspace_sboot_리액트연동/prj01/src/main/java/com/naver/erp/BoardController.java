@@ -371,21 +371,34 @@ public class BoardController {
 			,produces="application/json;charset=UTF-8"
 	)
 	@ResponseBody
-	public  Map insertBoard( 
-			BoardDTO boardDTO
+	public Map insertBoard( 
+			@RequestBody BoardDTO boardDTO
+			, BindingResult bindingResult
 	){
-		System.out.println(boardDTO.getB_no());
-		System.out.println(boardDTO.getSubject());
-		//*******************************************
-		// 게시판 등록 성공여부가 저장된 변수 선언. 1이 저장되면 성공했다는 의미
-		// 유효성 체크 에러 메시지 저장할 변수 msg 선언.
-		//*******************************************
+		System.out.println(boardDTO.getContent());
 		int boardRegCnt = 0;
+		String msg = "";
 		try {
+			//*******************************************
+			// check_BoardDTO 메소드를 호출하여 [유효성 체크]하고 경고 문자 얻기
+			//*******************************************
+			// check_BoardDTO 메소드를 호출하여 유효성 체크하고 에러 메시지 문자 얻기
+			msg = check_BoardDTO( boardDTO , bindingResult  );		
+			//*******************************************
+			// 만약 msg 안에 "" 가 저장되어 있으면, 즉 유효성 체크를 통과했으면
+			//*******************************************
+			if( msg.equals("") ){	
+				//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+				// [BoardServiceImpl 객체]의 insertBoard 메소드 호출로 
+				// 게시판 글 입력하고 [게시판 입력 적용행의 개수] 얻기
+				//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 				boardRegCnt = this.boardService.insertBoard(boardDTO);
+			}
 			
+			System.out.println( "BoardController.insertBoard 메소드 호출 성공 " );
 		}catch(Exception ex) {
 			boardRegCnt  = -1;
+			msg = "서버에서 문제 발생! 서버 관리자에게 문의 바람";
 		}
 		//*******************************************
 		// HashMap<String,String> 객체 생성하기
@@ -394,8 +407,8 @@ public class BoardController {
 		// HashMap<String,String> 객체 리턴하기
 		//*******************************************
 		Map map = new HashMap();
-		System.out.println(boardRegCnt);
 		map.put( "boardRegCnt", boardRegCnt );
+		map.put( "msg",msg );
 		return map;
 	}
 
@@ -497,60 +510,79 @@ public class BoardController {
 	// ModelAndView 객체를 리턴하면 JSP 를 호출하고 그 JSP 페이지의 실행결과인 HTML 문서가 응답메시지에 저장되어 전송되지만
 	// @RequestMapping(~) 와 @ResponseBody 가 붙으면 리턴하는 데이터가 JSON 형태로  응답메시지에 저장되어 전송된다.
 	//mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+	/*
+	 * @RequestMapping( value="/boardUpDelProc.do" ,method=RequestMethod.POST
+	 * ,produces="application/json;charset=UTF-8" )
+	 * 
+	 * @ResponseBody public Map<String,String> boardUpDelProc(
+	 * //******************************************* // 파라미터값을 저장할 [BoardDTO 객체]를
+	 * 매개변수로 선언 //******************************************* BoardDTO boardDTO
+	 * 
+	 * //******************************************* // <input type=file name=img>
+	 * 입력양식의 파일이 저장된 MultipartFile 객체 저장 매개변수 선언. // <주의> 업로드된 파일이 없어도 MultipartFile
+	 * 객체는 생성되어 들어온다. //*******************************************
+	 * ,@RequestParam("img") MultipartFile multi
+	 * 
+	 * //******************************************* // "upDel" 라는 파라미터명의 파라미터값이 저장된
+	 * 매개변수 b_no 선언 // 수정 또는 삭제 여부를 저장하는 매개변수 선언.
+	 * //******************************************* ,@RequestParam(value="upDel")
+	 * String upDel //******************************************* // 유효성 검사 결과를 관리하는
+	 * BindingResult 객체가 저장되어 들어오는 // 매개변수 bindingResult 선언
+	 * //******************************************* , BindingResult bindingResult )
+	 * throws Exception{
+	 * 
+	 * //******************************************* // 업로드 파일의 크기와 확장자 체크하기
+	 * //******************************************* // 만약에 업로드된 파일이 있으면 if(
+	 * multi.isEmpty()==false ) { // 만약에 업로드된 파일의 크기가 1000000 byte(=1000kb) 보다 크면
+	 * if( multi.getSize()>1000000 ) { Map<String,String> map = new
+	 * HashMap<String,String>(); map.put( "boardUpDelCnt", "0" ); map.put(
+	 * "msg","업로드 파일이 1000kb 보다크면 안됩니다." ); return map; } // 만약에 업로드된 파일의 확장자가 이미지
+	 * 확장자가 아니면 String fileName = multi.getOriginalFilename();
+	 * 
+	 * if( fileName.endsWith(".jpg")==false && fileName.endsWith(".gif")==false&&
+	 * fileName.endsWith(".png")==false ) { //if( !(fileName.endsWith(".jpg") ||
+	 * fileName.endsWith(".gif") || fileName.endsWith(".png")) ) { //if(
+	 * !fileName.endsWith(".jpg") && !fileName.endsWith(".gif") &&
+	 * !fileName.endsWith(".png") ) { Map<String,String> map = new
+	 * HashMap<String,String>(); map.put( "boardUpDelCnt", "0" ); map.put( "msg",
+	 * "이미지 파일이 아닙니다." ); return map; } }
+	 * //******************************************* // 수정 또는 삭제 행의 적용 개수 저장할 변수
+	 * boardUpDelCnt 선언. // 유효성 체크 시 경고메시지 저장할 변수 msg 선언.
+	 * //******************************************* int boardUpDelCnt = 0; String
+	 * msg = ""; //******************************************* // 만약 게시판 삭제 모드이면
+	 * //******************************************* if( upDel.equals("del") ){ //
+	 * 삭제 실행하고 삭제 적용행의 개수얻기 boardUpDelCnt = this.boardService.deleteBoard(boardDTO);
+	 * } //******************************************* // 만약게시판 수정 모드이면 수정 실행하고 수정
+	 * 적용행의 개수얻기 //******************************************* else
+	 * if(upDel.equals("up")) { //******************************************* //
+	 * check_BoardDTO 메소드를 호출하여 [유효성 체크]하고 경고 문자 얻기
+	 * //******************************************* // check_BoardDTO 메소드를 호출하여 유효성
+	 * 체크하고 에러 메시지 문자 얻기 msg = check_BoardDTO( boardDTO , bindingResult ); // 만약 msg
+	 * 안에 "" 가 저장되어 있으면, 즉 유효성 체크를 통과했으면 if( msg.equals("") ){
+	 * //---------------------------------------- // BoardServiceImple 객체의
+	 * updateBoard 라는 메소드 호출로 // 게시판 수정 실행하고 수정 적용행의 개수얻기
+	 * //---------------------------------------- boardUpDelCnt =
+	 * this.boardService.updateBoard(boardDTO, multi); } }
+	 * //******************************************* // HashMap<String,String> 객체
+	 * 생성하기 // HashMap<String,String> 객체에 게시판 수정.삭제 성공행의 개수 저장하기 //
+	 * HashMap<String,String> 객체에 유효성 체크 시 메시지 저장하기 // HashMap<String,String> 객체
+	 * 리턴하기 //******************************************* Map<String,String> map =
+	 * new HashMap<String,String>(); map.put( "boardUpDelCnt", boardUpDelCnt+"" );
+	 * map.put( "msg", msg ); return map; }
+	 */
 	@RequestMapping( 
 			value="/boardUpDelProc.do"
 			,method=RequestMethod.POST
 			,produces="application/json;charset=UTF-8"
 	)
 	@ResponseBody
-	public Map<String,String> boardUpDelProc(
-			//*******************************************
-			// 파라미터값을 저장할 [BoardDTO 객체]를 매개변수로 선언
-			//*******************************************
-			BoardDTO boardDTO
-
-			//*******************************************
-			// <input type=file name=img> 입력양식의 파일이 저장된 MultipartFile 객체 저장 매개변수 선언.
-			// <주의> 업로드된 파일이 없어도 MultipartFile 객체는 생성되어 들어온다.
-			//*******************************************
-			,@RequestParam("img")  MultipartFile multi
-			
-			//*******************************************
-			// "upDel" 라는 파라미터명의 파라미터값이 저장된 매개변수 b_no 선언
-			// 수정 또는 삭제 여부를 저장하는 매개변수 선언.
-			//*******************************************
-			,@RequestParam(value="upDel") String upDel
-			//*******************************************
-			// 유효성 검사 결과를 관리하는 BindingResult 객체가 저장되어 들어오는 
-			// 매개변수 bindingResult 선언
-			//*******************************************
+	public Map boardUpDelProc(
+			@RequestBody BoardDTO boardDTO
 			, BindingResult bindingResult
 	) throws Exception{
-
-			//*******************************************
-			// 업로드 파일의 크기와 확장자 체크하기
-			//*******************************************
-			// 만약에 업로드된 파일이 있으면
-			if( multi.isEmpty()==false ) {
-					// 만약에 업로드된 파일의 크기가 1000000 byte(=1000kb) 보다 크면
-					if( multi.getSize()>1000000 ) {
-						Map<String,String> map = new HashMap<String,String>();
-						map.put( "boardUpDelCnt", "0" );
-						map.put( "msg","업로드 파일이 1000kb 보다크면 안됩니다." );
-						return map;
-					}
-					// 만약에 업로드된 파일의 확장자가 이미지 확장자가 아니면
-					String fileName = multi.getOriginalFilename();
-					
-					if( fileName.endsWith(".jpg")==false && fileName.endsWith(".gif")==false&& fileName.endsWith(".png")==false ) {
-						//if( !(fileName.endsWith(".jpg") || fileName.endsWith(".gif") || fileName.endsWith(".png"))    ) {
-						//if( !fileName.endsWith(".jpg") && !fileName.endsWith(".gif") && !fileName.endsWith(".png") ) {
-						Map<String,String> map = new HashMap<String,String>();
-						map.put( "boardUpDelCnt", "0" );
-						map.put( "msg", "이미지 파일이 아닙니다." );
-						return map;
-					}
-			}
+			System.out.println(boardDTO.getContent());
+			System.out.println(boardDTO.getUpDel());
+			String upDel = boardDTO.getUpDel(); 
 			//*******************************************
 			// 수정 또는 삭제 행의 적용 개수 저장할 변수 boardUpDelCnt 선언.
 			// 유효성 체크 시 경고메시지 저장할 변수 msg 선언.
@@ -579,7 +611,7 @@ public class BoardController {
 					// BoardServiceImple 객체의 updateBoard 라는 메소드 호출로
 					// 게시판 수정 실행하고 수정 적용행의 개수얻기
 					//---------------------------------------- 
-					boardUpDelCnt = this.boardService.updateBoard(boardDTO, multi);
+					boardUpDelCnt = this.boardService.updateBoard(boardDTO);
 				}
 			}
 			//*******************************************
@@ -588,12 +620,11 @@ public class BoardController {
 			// HashMap<String,String> 객체에 유효성 체크 시 메시지 저장하기
 			// HashMap<String,String> 객체 리턴하기
 			//*******************************************
-			Map<String,String> map = new HashMap<String,String>();
-			map.put( "boardUpDelCnt", boardUpDelCnt+"" );
+			Map map = new HashMap();
+			map.put( "boardUpDelCnt", boardUpDelCnt );
 			map.put( "msg", msg );
 			return map;
 	}
-
 }
 
 
