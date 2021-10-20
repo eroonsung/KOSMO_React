@@ -76,7 +76,8 @@ function App() {
       <Route path ="/naver/checkLogin2" component={CheckLogin2}/>
 
       <Route path ="/naver/avg" component={Avg}/>
-
+      
+      <Route path ="/" component={LoginForm} exact={true}/>
       <Route path ="/board/loginForm" component={LoginForm}/>
       <Route path ="/board/boardList" component={BoardList}/>
       <Route path ="/board/boardContentForm" component={BoardContentForm}/>

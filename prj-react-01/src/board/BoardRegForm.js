@@ -6,40 +6,58 @@ function BoardRegForm(props){
 
   const [board, setBoard] = useState({b_no:b_no});
 
-
   
   const goBoardList = ()=>{
     props.history.push('/board/boardList');
   }
   const change= (e)=>{
-    
     setBoard( { ...board, [e.target.name]:e.target.value } );
   }
   
-
+  //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
+  // 지역변수 regBoard 선언하고 새글쓰기 또는 댓글쓰기 버튼 클릭 시 실행할 구문을 내포한 화살표 함수 선언하기
+  //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm  
   const regBoard=()=>{
     axios.post(
-      "http://localhost:8081/naver/boardRegProc.do"
+      'http://localhost:8081/naver/boardRegProc.do'
       , board
-     ).then(
-        (responseJson)=>{
-          alert(responseJson.boardRegCnt);
+    ).then(
+      responseJson=>{
+        let regCnt = responseJson.data.boardRegCnt;
+        let msg = responseJson.data.msg;
+
+        if(msg!=null && msg.length>0){
+          alert(msg);
           return;
-          if(board.b_no==0){
-            if(responseJson.msg==""&&responseJson.boardRegCnt==1){
-              alert("새글쓰기 성공")
-            }
+        }
+
+        if(regCnt==1){
+          /*
+          if(b_no<1){
+            alert("새글쓰기 성공");
+            props.history.push("/board/boardList");
           }else{
-            if(responseJson.msg==""&&responseJson.boardRegCnt==1){
-              alert("댓글쓰기 성공")
-            }
+            alert("댓글쓰기 성공");
+            props.history.push("/board/boardList");
+          }
+          */
+          alert((b_no<1?'새글쓰기':'댓글쓰기')+'성공');
+          props.history.push("/board/boardList");
+        }else{
+          if(b_no<1){
+            alert("새글쓰기 실패");
+            return;
+          }else{
+            alert("댓글쓰기 실패");
+            return;
           }
         }
-     ).catch(
-       function (error) {
-         alert(error.message);
-       }
-     )
+      }
+    ).catch(
+      function(error){
+        alert(error.message);
+      }
+    )
   }
 
 

@@ -178,6 +178,13 @@ const keyPress = e=>{
     }
   )
 }
+
+const makeSpace = (print_level)=>{
+  
+    for(let i =0; i<print_level; i++){
+      
+    }
+}
  //mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm
  //지역변수 pagingNoTag 선언하고 화살표 함수 저장하기
  //페이징 번호가 HTML 태그와 어울려 저장된다.
@@ -279,7 +286,13 @@ const keyPress = e=>{
               goContentForm(board.b_no);
             }}>
               <td>{searchResult.boardListAllCnt-(searchResult.selectPageNo*20-20+1)+1-index}</td>
-              <td>{board.subject}</td>
+              <td>
+                {
+                  board.print_level>0?makeSpace(board.print_level)+'ㄴ':''
+                }
+                {board.subject}
+                
+              </td>
               <td>{board.writer}</td>
               <td>{board.readcount}</td>
               <td>{board.reg_date}</td>
